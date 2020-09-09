@@ -1,0 +1,16 @@
+---
+- hosts: app-servers
+  remote_user: root
+  vars:
+    tomcat_ver: 9.0.30
+    ui_admin_username : petclinic
+    ui_admin_pass: petclinic
+    ui_manager_user: admin
+    ui_manager_pass: admin
+  
+  roles:
+    - app_server
+    - tomcat
+    
+
+
