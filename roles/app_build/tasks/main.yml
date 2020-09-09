@@ -1,0 +1,27 @@
+---
+# -  name: download git repo
+#    command: git clone https://github.com/spring-petclinic/spring-framework-petclinic
+#    ignore_errors: true
+
+- name: script file running for build generate
+  script: build_resource.sh 
+
+- name: build
+  shell: |
+    cd /app/spring-framework-petclinic
+    bash mvnw package -P MySQL
+  become: true
+
+- name: deploy
+  shell: |
+    cd /app/spring-framework-petclinic/target
+    mv petclinic.war /usr/share/tomcat/webapps/
+    systemctl restart tomcat
+
+
+
+  
+
+
+
+

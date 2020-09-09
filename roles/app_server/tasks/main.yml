@@ -1,0 +1,51 @@
+---
+- name: set hostname for the machine
+  hostname: name="app-server"
+  become: true
+
+- name: install java 
+  yum: name=java-1.8.0-openjdk  state=present 
+  become: true 
+
+- name: install apache
+  yum: name=httpd  state=latest
+
+- name: Install basic packages
+  package:
+    name: ['httpd-devel','gcc']
+    state: present
+
+- name: install mod_jk setup
+  shell: |
+    wget http://apachemirror.wuchna.com/tomcat/tomcat-connectors/jk/tomcat-connectors-1.2.48-src.tar.gz 
+    tar -xvf tomcat*
+    cd tomcat-connectors-1.2.48-src /native/
+    ./configure --with-apxs=/usr/bin/apxs
+    make
+    make install 
+
+- name: Move mod_jk  config file
+  copy:
+    src: mod_jk.conf 
+    dest: /etc/httpd/conf.d/mod_jk.conf 
+    mode: 0770
+
+- name: move server.xml to tomcat 
+  copy:
+    src: server.xml 
+    dest: /usr/share/tomcat/conf/server.xml 
+  become: true 
+
+- name: Create the worker.properties file added lines
+  copy: 
+    src: workers.properties 
+    dest: /etc/httpd/conf.d/workers.properties 
+  become: true  
+     
+
+- name: starting Apache 
+  service: name=httpd enabled=yes state=started 
+
+- name: restart tomcat service  
+  service: name=tomcat state=restarted
+

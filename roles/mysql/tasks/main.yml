@@ -1,0 +1,25 @@
+---
+- name: set hostname for the machine
+  hostname: name="db-server"
+  become: true
+
+- name: download package 
+  command: wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+
+- name: add package for rpm
+  command: rpm -ivh mysql-community-release-el7-5.noarch.rpm  
+  become: true
+
+- name: install mysql 
+  yum: name=mysql-server state=present 
+
+- name: restart mysql service
+  service: name=mysqld state=started
+
+
+- name: install shell script for db creation
+  script: db_creat.sh
+
+- name: start mysql service
+  service: name=mysqld state=restarted  
+
